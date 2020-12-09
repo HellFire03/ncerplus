@@ -4,15 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.DownloadManager;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -25,15 +31,21 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 public class MainActivity extends AppCompatActivity {
     private WebView myWebView;
+    RelativeLayout relativeLayout;
+    Button btnNoInternetConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setTitle(" ");
         myWebView = (WebView) findViewById(R.id.webView);
         WebSettings webSettings = myWebView.getSettings();
+        btnNoInternetConnection = (Button) findViewById(R.id.btnNoConnection);
+        relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+        checkConnection();
         webSettings.setJavaScriptEnabled(true);
-        myWebView.loadUrl("https://dbatubeta.blogspot.com/p/home.html");
+        myWebView.loadUrl("https://ncerplus.blogspot.com/p/main.html");
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.setDownloadListener(new DownloadListener() {
             @Override
@@ -77,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
                         }).check();
             }
         });
+        btnNoInternetConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkConnection();
+            }
+        });
     }
 
     @Override
@@ -86,6 +104,33 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    public void checkConnection(){
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+         NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if(wifi.isConnected()){
+            myWebView.loadUrl("https://ncerplus.blogspot.com/p/main.html");
+              myWebView.setVisibility(View.VISIBLE);
+              relativeLayout.setVisibility(View.GONE);
+        }
+        else if (mobileNetwork.isConnected()){
+            myWebView.loadUrl("https://ncerplus.blogspot.com/p/main.html");
+              myWebView.setVisibility(View.VISIBLE);
+              relativeLayout.setVisibility(View.GONE);
+        }
+        else {
+            myWebView.setVisibility(View.GONE);
+            relativeLayout.setVisibility(View.VISIBLE);
+
+
+        }
+
+
+
     }
 }
 
